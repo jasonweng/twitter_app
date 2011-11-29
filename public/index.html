@@ -1,0 +1,399 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>whohasmorefollowers</title>
+
+<style>
+
+body{
+
+padding:0;
+
+margin:0;
+
+}
+
+*{
+
+outline;none;
+
+}
+
+
+
+#btn {
+
+border:none;
+
+width:400px;
+
+height:8%;
+
+color:#ffffff;
+
+font-size:200%;
+
+padding:0px;
+
+text-align:center;
+
+background: rgba(255,0,255,0.6);
+
+background: rgb(255,0,255);
+
+border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px;
+
+}
+
+
+
+#btn:hover {
+
+padding: 1px;
+
+background: rgba(255,0,255,0.7);
+
+border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px;
+
+}
+
+
+
+#user1{
+
+border:none;
+
+width:400px;
+
+height:8%;
+
+color:#ff00ff;
+
+font-size:200%;
+
+padding:0px 0 0 0;
+
+text-align:center;
+
+background: rgba(255,0,255,0.1);
+
+background: rgb(255,200,255);
+
+border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px;
+
+}
+
+#user2{
+
+border:none;
+
+width:400px;
+
+height:8%;
+
+color:#ff00ff;
+
+font-size:200%;
+
+padding:0px 0 0 0;
+
+text-align:center;
+
+background: rgba(255,0,255,0.1);
+
+background: rgb(255,200,255);
+
+border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px;
+
+}
+
+
+
+#page{
+
+margin-top:20px;;
+
+margin-left:20%;
+
+margin-right:20%;
+
+text-align:center;
+
+}
+
+#results{
+
+margin-top:50px;
+
+width:100%;
+
+float:center;
+
+}
+
+
+
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0}
+
+#nav li{list-style:none}
+
+#nav{height:16px;margin-bottom:0px;background-color:#fff}#nav
+
+ul{float:right}
+
+#nav
+
+li{float:left;width:60px;text-align:center;border-left:1px solid #fff}
+
+#nav
+
+li a{display:block;color:#f0f;font-size:85%;text-decoration:none;text-transform:uppercase;font-weight:normal;line-height:16px}
+
+#nav li.selected a{background-color:#000}
+
+#nav li a:hover{background-color:#f0f;color:#fff;}
+
+
+
+
+
+
+
+a{
+
+text-decoration:none;
+
+color:red;
+
+}
+
+a div{
+
+//display:none;
+
+position: absolute;
+
+margin-top:105px;
+
+margin-left:133px;
+
+}
+
+a:hover div{
+
+display:block;
+
+}
+
+.tip {
+
+ padding:10px;
+
+position:absolute;
+
+top:0%;
+
+left:0%;
+
+width:300px;
+
+height:300px;
+
+margin-left:0px;
+
+margin-top:0px;
+
+text-align:center;
+
+
+
+  opacity:0.8;
+
+  filter:alpha(opacity=80);
+
+}
+
+
+
+.tip .body {
+
+  color: #ffffff;
+
+  background-color: #6323B1;
+
+  padding:5px 5px 5px 5px;
+
+   border-radius:5px; 
+
+  -moz-border-radius:5px;
+
+  -webkit-border-radius:5px;
+
+}
+
+.score { 
+
+background-color:#ffffff;
+
+color:#f0f;
+
+font-family:'Crysta';
+
+font-size: 300%;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+</style>
+
+</head>
+
+<body align="center">
+
+
+
+
+
+<center><img src="blue.png" style="top:0;left:0;position:fixed;"/></center>
+
+<div id="page">
+
+<input id="user1" type="text" value="google"> <br /><br />
+
+<input id="user2" type="text" value="twitter"><br /><br />
+
+<input onclick="javascript:compareTwitter();" value="compare" id="btn" 
+
+type="button">
+
+
+
+
+
+<div id="results" >
+
+
+
+</div>
+
+</div>
+
+<script type="text/javascript">
+
+var fc1, fc2 = 0;
+
+var statusHTML = [];
+
+var data1, data2 = '';
+
+
+
+function showAvatar1(twitters) {
+
+statusHTML = [];
+
+for (var i=0; i<twitters.length; i++){
+
+fc1 = twitters[i].user.followers_count;
+
+data1 =('<span><a href="http://twitter.com/'+twitters[i].user.screen_name+'"><img src="'+twitters[i].user.profile_image_url+'" style="border:none;"/ width="100px" height="100px"></a><br /><b>'+twitters[i].user.screen_name+'</b><br />'+twitters[i].user.followers_count+'<br /> followers.</span>');
+
+
+
+}
+
+}
+
+function showAvatar2(twitters) {
+
+for (var i=0; i<twitters.length; i++){
+
+fc2 = twitters[i].user.followers_count;;
+
+data2 =('<span ><a href="http://twitter.com/'+twitters[i].user.screen_name+'"><img src="'+twitters[i].user.profile_image_url+'" style="border:none;" width="100px" height="100px"/></a><br /><b>'+twitters[i].user.screen_name+'</b><br />'+twitters[i].user.followers_count+'<br /> followers.</span>');
+
+}
+
+// document.getElementById('results').innerHTML = statusHTML.join('');]
+
+
+
+if(parseInt(fc1)>parseInt(fc2)){
+
+document.getElementById('results').innerHTML = data1 + '<br />'+ data2 ;
+
+}
+
+else{
+
+document.getElementById('results').innerHTML = data2 +'<br />'+data1 ;
+
+}
+
+}
+
+</script>
+
+<script>
+
+function compareTwitter(){
+
+document.getElementById('results').innerHTML='Loading...';
+
+
+
+var user1 = document.getElementById("user1").value;
+
+var user2 = document.getElementById("user2").value;
+
+
+
+var src1 = "http://twitter.com/statuses/user_timeline/"+user1+".json?callback=showAvatar1&count=1";
+
+var src2 = "http://twitter.com/statuses/user_timeline/"+user2+".json?callback=showAvatar2&count=1";
+
+
+
+var s1 = document.createElement('script');
+
+var s2 = document.createElement('script');
+
+
+
+s1.setAttribute('src',src1);
+
+s2.setAttribute('src',src2);
+
+
+
+document.getElementsByTagName('head')[0].appendChild(s1);
+
+document.getElementsByTagName('head')[0].appendChild(s2);
+
+
+
+}
+
+
+
+
+
+
+
+</script>                          
+
+                             
+
+</body></html>
