@@ -11,21 +11,43 @@
 	<style>
 	li{
 		list-style:none;
+		line-height:1.4;
+	}
+	ul{
+		margin:0;
+		padding:0;
 	}
 	.tweetList{
 		border-bottom:1px solid #333;
 		padding:10px 0;
 		overflow:hidden;
+		color:#534d35;
 	}
 	.retweet{
-		margin:10px 30px;
+		margin:10px 0;
 		overflow:hidden;
 		padding:10px;
-		background:#ccc;
+		background:rgba(231,230,216,.6);
+		border:#dbdbdb 1px solid;
+		-webkit-border-radius:4px;
 	}
 	.userProfileImg{
 		float:left;
 		margin-right:20px;
+		border:2px solid #fff;
+		-webkit-border-radius:4px;
+	}
+	.tweetContent{
+		margin-left:75px;
+	}
+	.ui-content{
+		background:#d1d1d1;
+	}
+	.screen_name{
+		padding-bottom:10px;
+	}
+	@media only screen and (-webkit-min-device-pixel-ratio: 2){
+		
 	}
 	</style>
 </head> 
@@ -36,13 +58,18 @@
 	<div data-role="page" id="one">
 
 		<div data-role="header">
-			<h1>笑笑爸爸的微博</h1>
+			<ul>
+				<li>我的微博</li>
+				<li>消息</li>
+				<li>我的微博</li>
+				<li>我的微博</li>
+			</ul>
 		</div><!-- /header -->
 
 		<div data-role="content" >	
-			<!-- <a href="https://api.weibo.com/oauth2/authorize?client_id=1909920597&response_type=token&redirect_uri=http://jason.me:3000/">connect weibo</a> -->
+			<!-- <a href="https://api.weibo.com/oauth2/authorize?client_id=1909920597&response_type=token&redirect_uri=http://jason.me:3001/">connect weibo</a> -->
 			
-			<ul class="homeTimeLine" id="homeTimeLine">
+			<ul class="timeLine" id="homeTimeLine">
 				
 			</ul>
 			
@@ -58,13 +85,17 @@
 
 
 	<!-- Start of second page: #two -->
-	<div data-role="page" id="two" data-theme="a">
+	<div data-role="page" id="two">
 
 		<div data-role="header">
 			<h1>Two</h1>
 		</div><!-- /header -->
 
-		<div data-role="content" data-theme="a">	
+		<div data-role="content" data-theme="a">
+			<ul class="timeLine" id="ids">
+				
+			</ul>
+		</div>
 			
 
 		<div data-role="footer">
@@ -80,7 +111,9 @@
 			<h1>Dialog</h1>
 		</div><!-- /header -->
 
-		<div data-role="content" data-theme="d">	
+		<div data-role="content" data-theme="d">
+			
+		</div>
 			
 
 		<div data-role="footer">
@@ -89,37 +122,59 @@
 	</div><!-- /page popup -->
 
 <script>
+function replaceReg(reg,str){
+  return str.replace(reg,function(m){return '<a href="'+m+'">'+m+'</a>';}) 
+ }
 
 	var xiaoxiaoWB = {
-		home_timeline : function(){
+			timeline : function(json,targetId,countNumber,screenName,method){
 			WB2.anyWhere(function(W){
-			W.parseCMD("/statuses/home_timeline.json", function(sResult, bStatus){
+			W.parseCMD(json, function(sResult, bStatus){
+						$(targetId).empty();
 						for(i=0;i<sResult.length;i++){
 							
 							if( sResult[i].thumbnail_pic ){
-								$('#homeTimeLine').append("<li class='tweetList  tweetList" + i + "' data-role='listview'>" + "<img class='userProfileImg' src=" +sResult[i].user.profile_image_url+ " />" + sResult[i].user.screen_name + "<br />" + sResult[i].text + "<br />"+ "<a href=" +sResult[i].original_pic+ "><img class='thumbnail_pic' src="+sResult[i].thumbnail_pic+" /></a>" + "<li>");
+								$(targetId).append("<li class='tweetList  tweetList" + i + "' data-role='listview'>" + "<img class='userProfileImg' src=" +sResult[i].user.profile_image_url+ " /><div class='tweetContent'><a href='#two' class='screen_name'>" + sResult[i].user.screen_name + "</a><br /><span class='tweetText'>" + sResult[i].text + "</span><br />"+ "<a href=" +sResult[i].original_pic+ "><img class='thumbnail_pic' src="+sResult[i].thumbnail_pic+" /></a>" + "</div><li>");
 								}else{
-									$('#homeTimeLine').append("<li class='tweetList  tweetList" + i + "' data-role='listview'>" + "<img class='userProfileImg' src=" +sResult[i].user.profile_image_url+ " />" + sResult[i].user.screen_name+ "<br />"+sResult[i].text + "<li>");
+									$(targetId).append("<li class='tweetList  tweetList" + i + "' data-role='listview'>" + "<img class='userProfileImg' src=" +sResult[i].user.profile_image_url+ " /><div class='tweetContent'><a href='#two' class='screen_name'>" + sResult[i].user.screen_name+ "</a><br /><span class='tweetText'>"+sResult[i].text + "</span></div><li>");
 								};
-								
-							if( sResult[i].retweeted_status ){
-								$("#homeTimeLine .tweetList"+i).append("<li class='retweet'>" + sResult[i].retweeted_status.user.screen_name+ "<br />"+sResult[i].retweeted_status.text  + "<li>");
-							}else if( sResult[i].retweeted_status && sResult[i].retweeted_status.thumbnail_pic ){
-								$("#homeTimeLine .tweetList"+i).append("<li class='retweet'>" + sResult[i].retweeted_status.user.screen_name+ "<br />"+sResult[i].retweeted_status.text + "<br />"+ "<a href=" +sResult[i].retweeted_status.original_pic+"<img src="+sResult[i].retweeted_status.thumbnail_pic+" /></a>" + "<li>");
-							}
+								if( sResult[i].retweeted_status ){
+									$(targetId+" .tweetList"+i +" .tweetContent").append("<li class='retweet'><a href='#two' class='screen_name'>" + sResult[i].retweeted_status.user.screen_name+ "</a><br /><span class='tweetText'>"+sResult[i].retweeted_status.text  + "</span><li>");
+								}else if( sResult[i].retweeted_status && sResult[i].retweeted_status.thumbnail_pic ){
+									$(targetId+" .tweetList"+i+" .tweetContent").append("<li class='retweet'><a href='#two' class='screen_name'>" + sResult[i].retweeted_status.user.screen_name+ "</a><br /><span class='tweetText'>"+sResult[i].retweeted_status.text + "</span><br />"+ "<a href=" +sResult[i].retweeted_status.original_pic+"<img src="+sResult[i].retweeted_status.thumbnail_pic+" /></a>" + "<li>");
+								}
 							
-						}
-						console.log(sResult);
+						}//end for
+						var regexp = new RegExp("(http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&amp;*+?:_/=<>]*)?", "gi");
+						$('.tweetText').each(function(){
+							var str = $(this).text();
+							$(this).html(replaceReg(regexp,str));
+						});
 			},{
-				count:'100'
+				count:countNumber,
+				screen_name: screenName
 			},{
-			    method: 'post'
+			    method: method
 			});
 			});
 		}
-	}
+		
+		
+	}//end xiaoxiaoWB
 	
-	xiaoxiaoWB.home_timeline();
+	xiaoxiaoWB.timeline('/statuses/home_timeline.json','#homeTimeLine','100','','post');
+
+	
+	
+	$('.screen_name').live('tap', function(){
+		$('#ids').empty();
+		xiaoxiaoWB.timeline('/statuses/user_timeline/ids.json','#ids','100',$(this).text(),'get');
+	});
+	
+	
+	
+	
+	
 </script>
 
 </body>
