@@ -5,51 +5,11 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<title>笑笑爸爸的微博</title> 
 	<link rel="stylesheet" href="//code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />
-	<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
 	<script src=" http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=1909920597" type="text/javascript" charset="utf-8"></script>
-	<style>
-	li{
-		list-style:none;
-		line-height:1.4;
-	}
-	ul{
-		margin:0;
-		padding:0;
-	}
-	.tweetList{
-		border-bottom:1px solid #333;
-		padding:10px 0;
-		overflow:hidden;
-		color:#534d35;
-	}
-	.retweet{
-		margin:10px 0;
-		overflow:hidden;
-		padding:10px;
-		background:rgba(231,230,216,.6);
-		border:#dbdbdb 1px solid;
-		-webkit-border-radius:4px;
-	}
-	.userProfileImg{
-		float:left;
-		margin-right:20px;
-		border:2px solid #fff;
-		-webkit-border-radius:4px;
-	}
-	.tweetContent{
-		margin-left:75px;
-	}
-	.ui-content{
-		background:#d1d1d1;
-	}
-	.screen_name{
-		padding-bottom:10px;
-	}
-	@media only screen and (-webkit-min-device-pixel-ratio: 2){
-		
-	}
-	</style>
+	<link rel="stylesheet" type="text/css" media="screen" href="weibo.css">
 </head> 
 <body>             
 
@@ -58,19 +18,23 @@
 	<div data-role="page" id="one">
 
 		<div data-role="header">
-			<ul>
-				<li>我的微博</li>
-				<li>消息</li>
-				<li>我的微博</li>
-				<li>我的微博</li>
-			</ul>
+			<ol>
+				<li><a href="#one"  class="current">我的微博</a></li>
+				<li><a href="#mentions">消息</a></li>
+				<li><a href="#message">私信</a></li>
+				<li><a href="#me">我的首页</a></li>
+			</ol>
 		</div><!-- /header -->
 
 		<div data-role="content" >	
 			<!-- <a href="https://api.weibo.com/oauth2/authorize?client_id=1909920597&response_type=token&redirect_uri=http://jason.me:3001/">connect weibo</a> -->
 			
 			<ul class="timeLine" id="homeTimeLine">
-				
+				<div id="loading">
+					<div class="ball"></div>
+					<div class="ball1"></div>
+					正在加载微博内容，请稍微等待！
+				</div>
 			</ul>
 			
 			
@@ -120,31 +84,95 @@
 			<h4>Page Footer</h4>
 		</div><!-- /footer -->
 	</div><!-- /page popup -->
+	
+	<!-- <input type="checkbox" id="menu" class="menuControl" checked="">
+		<label for="menu">
+	      <div class="circle-container">
+	          <button class="circle">&#10006;</button>
+	      </div>
+	  </label>
+		<ul class="items">
+	    <li>&#9733;</li>
+	    <li>&#9733;</li>
+	    <li>&#9733;</li>
+	    <li>&#9733;</li>
+	    <li>&#9733;</li>
+	    <li>&#9733;</li>         
+	  </ul> -->
+
+
+<script id="tweetList" type="text/x-jquery-tmpl">
+<li class='tweetList  tweetList' data-role='listview'>
+	<img class='userProfileImg' src='${userProfileImgUrl}' />
+	<div class='tweetContent'>
+		<a href='#two' class='screen_name'> ${userScreenName} </a><br />
+		<span class='tweetText'> ${tweetText} </span>
+
+		{{if originalPic}}
+			<br /><a href='${originalPic}'><img class='thumbnail_pic' src='${thumbnailPic}' /></a>
+		{{/if}}
+		
+		{{if r_thumbnailPic }}
+			<div class='retweet'>
+			<a href='#two' class='screen_name'> ${r_userScreenName} </a><br />
+				<span class='tweetText'>
+				<em>${r_tweetText}</em>
+				</span>
+				<br /><a href='${r_originalPic}'><img src='${r_thumbnailPic}' /></a>
+			</div>
+			{{else r_retweetedStatus }}
+			<div class='retweet'>
+			<a href='#two' class='screen_name'> ${r_userScreenName} </a><br />
+				<span class='tweetText'>
+				<em>${r_tweetText}</em>
+				</span>
+			</div>
+		{{/if}}
+		</div>
+</li>
+</script>
+
 
 <script>
-function replaceReg(reg,str){
-  return str.replace(reg,function(m){return '<a href="'+m+'">'+m+'</a>';}) 
- }
 
 	var xiaoxiaoWB = {
 			timeline : function(json,targetId,countNumber,screenName,method){
 			WB2.anyWhere(function(W){
 			W.parseCMD(json, function(sResult, bStatus){
-						$(targetId).empty();
-						for(i=0;i<sResult.length;i++){
-							
-							if( sResult[i].thumbnail_pic ){
-								$(targetId).append("<li class='tweetList  tweetList" + i + "' data-role='listview'>" + "<img class='userProfileImg' src=" +sResult[i].user.profile_image_url+ " /><div class='tweetContent'><a href='#two' class='screen_name'>" + sResult[i].user.screen_name + "</a><br /><span class='tweetText'>" + sResult[i].text + "</span><br />"+ "<a href=" +sResult[i].original_pic+ "><img class='thumbnail_pic' src="+sResult[i].thumbnail_pic+" /></a>" + "</div><li>");
-								}else{
-									$(targetId).append("<li class='tweetList  tweetList" + i + "' data-role='listview'>" + "<img class='userProfileImg' src=" +sResult[i].user.profile_image_url+ " /><div class='tweetContent'><a href='#two' class='screen_name'>" + sResult[i].user.screen_name+ "</a><br /><span class='tweetText'>"+sResult[i].text + "</span></div><li>");
+						if(bStatus){
+							$(targetId).find('#loading').remove();
+							$(targetId).empty();
+							for(i=0;i<sResult.length;i++){
+								if( sResult[i].retweeted_status){
+									var weiboContent={
+										userProfileImgUrl: sResult[i].user.profile_image_url,
+										userScreenName:    sResult[i].user.screen_name,
+										tweetText:         sResult[i].text,
+										originalPic:       sResult[i].original_pic,
+										thumbnailPic:      sResult[i].thumbnail_pic,
+										source:            sResult[i].source,
+										r_retweetedStatus: sResult[i].retweeted_status,
+										r_thumbnailPic:    sResult[i].retweeted_status.thumbnail_pic,
+										r_originalPic:     sResult[i].retweeted_status.original_pic,
+										r_tweetText:       sResult[i].retweeted_status.text,
+										r_userScreenName:  sResult[i].retweeted_status.user.screen_name
+									};
+							}else{
+								var weiboContent={
+									userProfileImgUrl: sResult[i].user.profile_image_url,
+									userScreenName:    sResult[i].user.screen_name,
+									tweetText:         sResult[i].text,
+									originalPic:       sResult[i].original_pic,
+									thumbnailPic:      sResult[i].thumbnail_pic,
+									source:            sResult[i].source,
+									r_retweetedStatus: ''
 								};
-								if( sResult[i].retweeted_status ){
-									$(targetId+" .tweetList"+i +" .tweetContent").append("<li class='retweet'><a href='#two' class='screen_name'>" + sResult[i].retweeted_status.user.screen_name+ "</a><br /><span class='tweetText'>"+sResult[i].retweeted_status.text  + "</span><li>");
-								}else if( sResult[i].retweeted_status && sResult[i].retweeted_status.thumbnail_pic ){
-									$(targetId+" .tweetList"+i+" .tweetContent").append("<li class='retweet'><a href='#two' class='screen_name'>" + sResult[i].retweeted_status.user.screen_name+ "</a><br /><span class='tweetText'>"+sResult[i].retweeted_status.text + "</span><br />"+ "<a href=" +sResult[i].retweeted_status.original_pic+"<img src="+sResult[i].retweeted_status.thumbnail_pic+" /></a>" + "<li>");
-								}
-							
-						}//end for
+							}
+							console.log(weiboContent);
+							$('#tweetList').tmpl( weiboContent ).appendTo($(targetId));
+
+							}//end for
+						}
 						var regexp = new RegExp("(http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&amp;*+?:_/=<>]*)?", "gi");
 						$('.tweetText').each(function(){
 							var str = $(this).text();
@@ -162,15 +190,21 @@ function replaceReg(reg,str){
 		
 	}//end xiaoxiaoWB
 	
-	xiaoxiaoWB.timeline('/statuses/home_timeline.json','#homeTimeLine','100','','post');
+	
+	$(function(){
+		xiaoxiaoWB.timeline('/statuses/home_timeline.json','#homeTimeLine','50','','post');
 
-	
-	
-	$('.screen_name').live('tap', function(){
-		$('#ids').empty();
-		xiaoxiaoWB.timeline('/statuses/user_timeline/ids.json','#ids','100',$(this).text(),'get');
+		$('.screen_name').live('tap', function(){
+			$('#ids').empty();
+			xiaoxiaoWB.timeline('/statuses/user_timeline/ids.json','#ids','100',$(this).text(),'get');
+		});
+		
 	});
 	
+	
+	function replaceReg(reg,str){
+	  return str.replace(reg,function(m){return '<a href="'+m+'">'+m+'</a>';})
+	 }
 	
 	
 	
