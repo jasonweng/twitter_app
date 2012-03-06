@@ -5,11 +5,20 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<title>笑笑爸爸的微博</title> 
 	<link rel="stylesheet" href="//code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="weibo.css" />
+
+
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
-	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
-	<script src=" http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=1909920597" type="text/javascript" charset="utf-8"></script>
-	<link rel="stylesheet" type="text/css" media="screen" href="weibo.css">
+  <script src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+
+	<script defer src="underscore-min.js"></script>
+	<script defer src="backbone-min.js"></script>
+
+	<script defer src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+	<script defer src="http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=1909920597" type="text/javascript" charset="utf-8"></script>
+
+	<script defer src="weibo.js"></script>
+
 </head> 
 <body>             
 
@@ -26,8 +35,14 @@
 			</ol>
 		</div><!-- /header -->
 
+		<div id="post_weibo">
+		  <textarea id="post_weibo_content"></textarea>
+      <button type="submit" id="post_weibo_submit">发布微博</button>
+      <div class="error_message"></div>
+		</div>
+
 		<div data-role="content" >	
-			<!-- <a href="https://api.weibo.com/oauth2/authorize?client_id=1909920597&response_type=token&redirect_uri=http://jason.me:3001/">connect weibo</a> -->
+			<a href="https://api.weibo.com/oauth2/authorize?client_id=1909920597&response_type=token&redirect_uri=http://jason.me:3001/">connect weibo</a>
 			
 			<ul class="timeLine" id="homeTimeLine">
 				<div id="loading">
@@ -128,88 +143,24 @@
 				</span>
 			</div>
 		{{/if}}
+    <div>${source}</div>
 		</div>
+
 </li>
 </script>
 
-
-<script>
-
-	var xiaoxiaoWB = {
-			timeline : function(json,targetId,countNumber,screenName,method){
-			WB2.anyWhere(function(W){
-			W.parseCMD(json, function(sResult, bStatus){
-						if(bStatus){
-							$(targetId).find('#loading').remove();
-							$(targetId).empty();
-							for(i=0;i<sResult.length;i++){
-								if( sResult[i].retweeted_status){
-									var weiboContent={
-										userProfileImgUrl: sResult[i].user.profile_image_url,
-										userScreenName:    sResult[i].user.screen_name,
-										tweetText:         sResult[i].text,
-										originalPic:       sResult[i].original_pic,
-										thumbnailPic:      sResult[i].thumbnail_pic,
-										source:            sResult[i].source,
-										r_retweetedStatus: sResult[i].retweeted_status,
-										r_thumbnailPic:    sResult[i].retweeted_status.thumbnail_pic,
-										r_originalPic:     sResult[i].retweeted_status.original_pic,
-										r_tweetText:       sResult[i].retweeted_status.text,
-										r_userScreenName:  sResult[i].retweeted_status.user.screen_name
-									};
-							}else{
-								var weiboContent={
-									userProfileImgUrl: sResult[i].user.profile_image_url,
-									userScreenName:    sResult[i].user.screen_name,
-									tweetText:         sResult[i].text,
-									originalPic:       sResult[i].original_pic,
-									thumbnailPic:      sResult[i].thumbnail_pic,
-									source:            sResult[i].source,
-									r_retweetedStatus: ''
-								};
-							}
-							console.log(weiboContent);
-							$('#tweetList').tmpl( weiboContent ).appendTo($(targetId));
-
-							}//end for
-						}
-						var regexp = new RegExp("(http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&amp;*+?:_/=<>]*)?", "gi");
-						$('.tweetText').each(function(){
-							var str = $(this).text();
-							$(this).html(replaceReg(regexp,str));
-						});
-			},{
-				count:countNumber,
-				screen_name: screenName
-			},{
-			    method: method
-			});
-			});
-		}
-		
-		
-	}//end xiaoxiaoWB
-	
-	
-	$(function(){
-		xiaoxiaoWB.timeline('/statuses/home_timeline.json','#homeTimeLine','50','','post');
-
-		$('.screen_name').live('tap', function(){
-			$('#ids').empty();
-			xiaoxiaoWB.timeline('/statuses/user_timeline/ids.json','#ids','100',$(this).text(),'get');
-		});
-		
-	});
-	
-	
-	function replaceReg(reg,str){
-	  return str.replace(reg,function(m){return '<a href="'+m+'">'+m+'</a>';})
-	 }
-	
-	
-	
-	
+<script id="postTweet" type="text/x-jquery-tmpl">
+<li class='tweetList  tweetList' data-role='listview'>
+  <img class='userProfileImg' src='${userProfileImgUrl}' />
+  <div class='tweetContent'>
+    <a href='#two' class='screen_name'> ${userScreenName} </a><br />
+    <span class='tweetText'> ${tweetText} </span>
+    <div>${source}</div>
+  </div>
+  
+</li>
 </script>
+
 
 </body>
 </html>
